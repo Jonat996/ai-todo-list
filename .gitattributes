@@ -1,0 +1,6 @@
+# Handle line endings automatically for text files
+# and enforce LF endings in the repository
+* text=auto eol=lf
+
+# Explicitly enforce LF for Husky files
+.husky/** text eol=lf

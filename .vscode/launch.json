@@ -1,0 +1,51 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "name": "Run Script: dev:debug",
+            "request": "launch",
+            "command": "npm run dev:debug",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "address": "localhost",
+            "name": "Attach to Docker Container",
+            "remoteRoot": "/var/www/src",
+            "request": "attach",
+            "type": "node",
+            "port": 9230,
+            "localRoot": "${workspaceFolder}/src",
+            "restart": false,
+            "sourceMaps": true,
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ]
+        },
+        {
+            "type": "node-terminal",
+            "name": "Run tests",
+            "request": "launch",
+            "command": "npm run test:debug",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Current Test File",
+            "autoAttachChildProcesses": true,
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "args": [
+                "run",
+                "${relativeFile}"
+            ],
+            "smartStep": true,
+            "console": "integratedTerminal"
+        }
+    ]
+}

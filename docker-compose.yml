@@ -1,0 +1,74 @@
+version: '3'  
+services:
+  skrull-postgres:
+    image: postgres:14-alpine
+    container_name: skrull-postgres
+    ports:
+      - '25432:25432'
+    environment:
+      - POSTGRES_USER=skrull
+      - POSTGRES_PASSWORD=unacontrasenadificil
+      - POSTGRES_DB=skrull
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    command:
+      - '-p 25432'
+    networks:
+      - skrull-network
+  
+  skrull-debug:
+    image: 'local/skrull-debug:latest'
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+      secrets:
+        - npmtoken
+    env_file:
+      - .env
+    container_name: skrull-debug
+    environment:
+      - PORT=3000
+      - DB_CONFIG={"username":"skrull","host":"skrull-postgres","engine":"postgres","password":"unacontrasenadificil","port":25432}
+      - REDIS_CONFIG={"host":"skrull-redis","port":6379}
+    ports:
+      - '3000:3000'
+      - '9230:9230'
+    volumes:
+      - .:/var/www
+      - node_modules_skrull:/var/www/node_modules
+      - ~/.ssh:/root/.ssh:rw
+      - ~/.aws:/root/.aws:rw
+    command: npx ts-node-dev --inspect=0.0.0.0:9230 --poll --respawn --transpile-only --exit-child src/app.ts
+    depends_on:
+      - skrull-postgres
+      - skrull-redis
+    networks:
+      - skrull-network
+  
+  skrull-redis:
+    image: redis:7-alpine
+    container_name: skrull-redis
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - skrull-network
+
+secrets:
+  npmtoken:
+    environment: NPM_TOKEN
+
+volumes:
+  postgres_data:
+  node_modules_skrull:
+  redis_data:
+networks:
+  skrull-network:
