@@ -1,6 +1,6 @@
 # This Dockerfile is used for debugging purposes, it does not include any COPY commands or
 # build steps, and is intended to be used with a mounted volume for the application code.
-FROM public.ecr.aws/docker/library/node:22-slim
+FROM public.ecr.aws/docker/library/node:24-slim
 
 # Set the working directory
 WORKDIR /var/www
