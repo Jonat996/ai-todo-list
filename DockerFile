@@ -1,5 +1,5 @@
 # Build stage
-FROM public.ecr.aws/docker/library/node:22 AS builder
+FROM public.ecr.aws/docker/library/node:24 AS builder
 WORKDIR /var/www
 COPY . /var/www
 RUN --mount=type=secret,id=npmtoken,target=/run/secrets/npmtoken \
@@ -9,7 +9,7 @@ RUN --mount=type=secret,id=npmtoken,target=/run/secrets/npmtoken \
 RUN npm prune --production
 
 # Run stage
-FROM public.ecr.aws/docker/library/node:22
+FROM public.ecr.aws/docker/library/node:24
 WORKDIR /var/www
 COPY --from=builder /var/www/dist /var/www/dist
 COPY --from=builder /var/www/node_modules /var/www/node_modules
